@@ -1,6 +1,12 @@
 # Audio_Bot_Recognition
 This project representing Telegram Bot that reсognizes pronanciation of digits in audio.
+## How to use the program?
+You can execute audio_digits_recognition.py with command:
+    
+    python3 audio_digits_recognition_bot.py
+If you want to change dataset or reset it you have to use the command:
 
+    python3 audio_digits_dataset_bot.py
 ## Audio_bot
 We have a telegram-bot that can receives audio, translate it to monocanal mode and put to wav directory.
 
@@ -32,49 +38,43 @@ This is log to console.
 This program supposed to dividing audio record ro few record with human voice.
 It used to dividing audio record with five digits in it to 5 records and put it to the appropriate in splitted/ directories.
 #### functions
+    def print_with_timeline(data, single_duration, units_name, row_limit):
+    def get_segment_energy(data, start, end):
+    def get_segments_energy(data, segment_duration):
+    def get_vad_mask(data, threshold):
+    def sec2samples(seconds, sample_rate):
+    class Segment:
+    def print_segments(segments, single_duration, units_name):
+    def mask_compress(data):    
+## Accuracy of dataset
+To check accuracy of dataset you can execute ml.py and run all the cells.
+Under the cell with mean function you can see an answer.
+## Audio recognition 
+### audio_digits_recognition_bot.py
+#### What does this program?
+This program executes telegram-bot that receives an audio and recognize a digit in it with dataset basis.
+It makes with predict() function help.
+#### functions
+The main function of this program is predict(), other only duplicate already written programs or response to functions of receiving and responsing messages.
+So, let's сconsider predict():
 
+    def predict(wav_path_after_vad):
+        filename = "model.pkl"#it's model genrated in ml.py
+        with open(filename, 'rb') as f:
+            model_pickled = f.read()    
+        model = pickle.loads(model_pickled)
+        sample_rate, audio = read(wav_path_after_vad)
+        max_duration_sec = 0.6
 
-def print_with_timeline(data, single_duration, units_name, row_limit):
-    for i in range(len(data)):
-        if i % row_limit == 0:
-            print(f"{single_duration * i:8.3f} {units_name} |  ", end='')
-        print(f"{data[i]:.3f} ", end='')
-        if (i + 1) % row_limit == 0 or i + 1 == len(data):
-            print(f" | {single_duration * (i + 1):8.3f} {units_name}")
+        max_duration = int(max_duration_sec * sample_rate + 1e-6)
+        if len(audio) < max_duration:
+            audio = np.pad(audio, (0, max_duration - len(audio)), constant_values = 0)
 
+        assert len(audio) <= max_duration, "very long file"
 
-def get_segment_energy(data, start, end):
-    energy = 0
-    for i in range(start, end):
-        energy += float(data[i]) * data[i] / (end - start)
-    energy = np.sqrt(energy) / 32768
-    return energy
-
-
-def get_segments_energy(data, segment_duration):
-    segments_energy  = []
-    for segment_start in range(0, len(data), segment_duration):
-        segment_stop = min(segment_start + segment_duration, len(data))
-        energy = get_segment_energy(data, segment_start, segment_stop)
-        segments_energy.append(energy)
-    return segments_energy
-
-
-def get_vad_mask(data, threshold):
-    vad_mask = np.zeros_like(data)
-    for i in range(0, len(data)):
-        vad_mask[i] = data[i] > threshold
-    return vad_mask
-
-
-def sec2samples(seconds, sample_rate):
-  return int(seconds * sample_rate)
-
-
-class Segment:
-
-
-def print_segments(segments, single_duration, units_name):
-
-
-def mask_compress(data):
+        feature = librosa.feature.melspectrogram(audio.astype(float), sample_rate, n_mels = 80, fmax = 4000)
+        print(feature.shape)
+        features_flatten = feature.reshape(-1)
+        print(features_flatten.shape)
+        answer = model.predict([features_flatten])[0]
+        return answer
