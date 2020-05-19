@@ -4,9 +4,11 @@ This project representing Telegram Bot that reсognizes pronanciation of digits 
 You can execute audio_digits_recognition.py with command:
     
     python3 audio_digits_recognition_bot.py
+Then you have to  send an audio message concerned word with digit.
 If you want to change dataset or reset it you have to use the command:
 
     python3 audio_digits_dataset_bot.py
+  
 ## Audio_bot
 We have a telegram-bot that can receives audio, translate it to monocanal mode and put to wav directory.
 
