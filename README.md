@@ -1,14 +1,11 @@
 # Audio_Bot_Recognition
 This project representing Telegram Bot that reсognizes pronanciation of digits in audio.
+## How to download the program?
+to download this program type this row:
+gitclone https://github.com/ghost171/Audio_Bot_Recognition
 ## How to use the program?
-You can execute audio_digits_recognition.py with command:
-    
-    python3 audio_digits_recognition_bot.py
-Then you have to  send an audio message concerned word with digit.
-If you want to change dataset or reset it you have to use the command:
-
-    python3 audio_digits_dataset_bot.py
-  
+1)First that we need to do is dataset assembling:
+    a) Execute the 
 ## Audio_bot
 We have a telegram-bot that can receives audio, translate it to monocanal mode and put to wav directory.
 
